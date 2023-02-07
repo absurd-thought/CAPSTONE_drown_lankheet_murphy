@@ -8,9 +8,12 @@ def get_top_review_terms(reviews_df):
     '''
     df must have a 'comments' column
     '''
+    import pandas as pd
     from nltk.corpus import stopwords
     from nltk.tokenize import RegexpTokenizer
     from nltk.stem import WordNetLemmatizer
+    from sklearn.feature_extraction.text import TfidfTransformer
+    from sklearn.feature_extraction.text import TfidfVectorizer
     
     tokenizer = RegexpTokenizer(r'\w+')
     stop_words = set(stopwords.words('english'))
