@@ -75,7 +75,7 @@ def get_top_amenities(listing_detail_df):
     s_corr.reset_index(inplace=True)
     s_corr.rename(columns={'index':'amenity', 0:'corr'}, inplace=True)
     
-    review_associated_amenities=list(s_corr.sort_values(by='corr', ascending=False)['amenity'][:10])
-    top_10_amenities = [i.strip(' ""') for i in review_associated_amenities]
+    review_associated_amenities=list(s_corr.sort_values(by='corr', ascending=False)['amenity'][:20])
+    top_20_amenities = [i.strip('[] ""') for i in review_associated_amenities]
     
-    return top_10_amenities
+    return top_20_amenities
