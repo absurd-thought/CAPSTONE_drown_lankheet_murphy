@@ -61,3 +61,21 @@ def get_top_review_terms(reviews_df):
     
     return list(tfidf_df.index)
 
+
+
+def get_top_amenities(listing_detail_df):
+    value_amenities = pd.merge(listing_detail_df['amenities'],listing_detail_df['review_scores_value'],
+                               left_index=True, right_index=True)
+    value_amenities = value_amenities.dropna()
+    
+    # correlating amenities with review scores
+    # from https://stackoverflow.com/questions/48873233/is-there-a-way-to-get-correlation-with-string-data-and-a-numerical-value-in-pand
+
+    s_corr = pd.DataFrame(value_amenities.amenities.str.get_dummies(sep=',').corrwith(value_amenities.review_scores_value/value_amenities.review_scores_value.max()))
+    s_corr.reset_index(inplace=True)
+    s_corr.rename(columns={'index':'amenity', 0:'corr'}, inplace=True)
+    
+    review_associated_amenities=list(s_corr.sort_values(by='corr', ascending=False)['amenity'][:10])
+    top_10_amenities = [i.strip(' ""') for i in review_associated_amenities]
+    
+    return top_10_amenities
