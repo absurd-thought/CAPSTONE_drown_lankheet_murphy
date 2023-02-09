@@ -6,7 +6,7 @@
 
 def get_top_review_terms(reviews_df):
     '''
-    df must have a 'comments' column
+    uses reviews_df to return the 5 most relevant terms in all reviews
     '''
     import pandas as pd
     from nltk.corpus import stopwords
@@ -57,14 +57,16 @@ def get_top_review_terms(reviews_df):
     tfidf_df = pd.DataFrame(tfIdf[0].T.todense(), index=tfIdfVectorizer.get_feature_names_out(), columns=["TF-IDF"])
     tfidf_df = tfidf_df.sort_values('TF-IDF', ascending=False)
 
-    tfidf_df = tfidf_df.head(3)
+    tfidf_df = tfidf_df.head(5)
     
     return list(tfidf_df.index)
 
-
-
-def get_top_amenities(listing_detail_df):
-    value_amenities = pd.merge(listing_detail_df['amenities'],listing_detail_df['review_scores_value'],
+######################################################################################################################################
+def get_top_amenities(listing_df):
+    '''
+    uses listing df to correlate amenities with review__score_value to return the top 20 suggested amenties and scores in list format
+    '''
+    value_amenities = pd.merge(listing_df['amenities'],listing_df['review_scores_value'],
                                left_index=True, right_index=True)
     value_amenities = value_amenities.dropna()
     
@@ -79,3 +81,21 @@ def get_top_amenities(listing_detail_df):
     top_20_amenities = [i.strip('[] ""') for i in review_associated_amenities]
     
     return top_20_amenities
+
+######################################################################################################################################
+def get_amenities_visual(listing_df):
+    '''
+    Uses the listing df to create an ordered heatmap of top 20 recommended amenities
+    '''
+    amenities, scores = get_top_amenities(listing_df)
+    amenities_df = pd.DataFrame(amenities, scores).reset_index()
+    amenities_df.rename(columns={'index':'score', 0:'amenity'}, inplace=True)
+    
+    chart = alt.Chart(amenities_df, title=['What Amenities Should I Add', 'to Increase Value?']).mark_rect().encode(
+    y = alt.Y('amenity:N', sort=alt.EncodingSortField(field='score',
+                                                      order='descending'),
+              title=None),
+        color = alt.Color('score:Q', legend=None)
+    )
+    
+    return chart
