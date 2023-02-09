@@ -6,7 +6,7 @@
 
 def get_top_review_terms(reviews_df):
     '''
-    uses reviews_df to return the 5 most relevant terms in all reviews
+    uses reviews_df to return a df the 5 most relevant terms in all reviews and their relevance scores
     '''
     import pandas as pd
     from nltk.corpus import stopwords
@@ -58,8 +58,10 @@ def get_top_review_terms(reviews_df):
     tfidf_df = tfidf_df.sort_values('TF-IDF', ascending=False)
 
     tfidf_df = tfidf_df.head(5)
+    tfidf_df = tfidf_df.reset_index()
+    tfidf_df.rename(columns={'index':'word'}, inplace=True)
     
-    return list(tfidf_df.index)
+    return tfidf_df
 
 ######################################################################################################################################
 def get_top_amenities(listing_df):
@@ -71,7 +73,7 @@ def get_top_amenities(listing_df):
     value_amenities = value_amenities.dropna()
     
     # correlating amenities with review scores
-    # from https://stackoverflow.com/questions/48873233/is-there-a-way-to-get-correlation-with-string-data-and-a-numerical-value-in-pand
+    # adapted from https://stackoverflow.com/questions/48873233/is-there-a-way-to-get-correlation-with-string-data-and-a-numerical-value-in-pand
 
     s_corr = pd.DataFrame(value_amenities.amenities.str.get_dummies(sep=',').corrwith(value_amenities.review_scores_value/value_amenities.review_scores_value.max()))
     s_corr.reset_index(inplace=True)
@@ -99,3 +101,27 @@ def get_amenities_visual(listing_df):
     )
     
     return chart
+
+######################################################################################################################################
+def get_review_wordcloud(reviews_df):
+    '''
+    uses the reviews df to create a word cloud of the 5 most relevant words in reviews,
+    which can be incorporated into the property descriptions
+    '''
+    import pandas as pd
+    from wordcloud import WordCloud
+    import matplotlib.pyplot as plt
+    
+    df = get_top_review_terms(reviews_df)
+    terms_dict = df.set_index('word')['TF-IDF'].to_dict()
+    
+    # adapted from https://stackoverflow.com/questions/61916096/word-cloud-built-out-of-tf-idf-vectorizer-function
+    cloud = WordCloud(background_color="white", max_words=5).generate_from_frequencies(terms_dict)
+    
+    # adapted from https://towardsdatascience.com/simple-wordcloud-in-python-2ae54a9f58e5
+    def plot_cloud(wordcloud):
+        plt.figure(figsize=(5, 3))
+        plt.imshow(wordcloud) 
+        plt.axis("off");
+        
+    return plot_cloud(cloud)
