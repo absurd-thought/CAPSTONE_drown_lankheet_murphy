@@ -7,3 +7,7 @@ secrets.ipynb
 secretsPaul.py
 secretsPaul.ipynb
 .ipynb_checkpoints/secretsPaul-checkpoint.ipynb
+Data Loading/data.csv
+Data Loading/austin_2022-12-15_calendar.csv
+*.gz
+*.csv
