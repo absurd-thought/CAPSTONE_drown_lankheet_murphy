@@ -23,9 +23,10 @@ pip install -r requirements.txt
 ```
 secrets = {}
 secrets['DATABASE_ENDPOINT'] = 'my_aws_database_url'
-secrets['DATABASE_USER'] = 'my_username’
-secrets['DATABASE_PASSWORD'] = 'my_password’
-secrets['DATABASE_PORT'] = ‘my_port’
+secrets['DATABASE_USER'] = 'my_username'
+secrets['DATABASE_PASSWORD'] = 'my_password'
+secrets['DATABASE_PORT'] = 'my_port'
+secrets['DATABASE_NAME'] = 'my_db_name'
 ```
 Now you can run the .py file.
 
