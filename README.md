@@ -28,10 +28,13 @@ secrets['DATABASE_PASSWORD'] = 'my_password'
 secrets['DATABASE_PORT'] = 'my_port'
 secrets['DATABASE_NAME'] = 'my_db_name'
 ```
-Now you can run the .py file.
+Now you can run the .py files.
+
+## Loading up your database
+* Run the (DATABASE PY FILE NAME HERE) file.
 
 ## Creating and hosting your streamlit.io app
-* Download the folder <streamlit> from the repository.
+* Download the folder (STREAMLIT FOLDER NAME HERE) from the repository.
 * Open the command line and navigate to where you saved <streamlit.py>.
 * Run the following command:
 ```
