@@ -13,7 +13,7 @@ _Built with_ [AWS](https://aws.amazon.com/), [MySQL](https://www.mysql.com/), [P
 ## Getting started
 * Ensure that you have the latest version of Python installed. Use the code below to install the libraries needed for this project:
 ```
-pip install -r requirements.txt
+pip install -r --upgrade requirements.txt
 ```
 * You will need to have a MySQL database on AWS; follow [this tutorial](https://aws.amazon.com/getting-started/hands-on/create-mysql-db/).
 
