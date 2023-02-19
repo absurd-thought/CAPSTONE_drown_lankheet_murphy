@@ -1,30 +1,48 @@
 ## NLP FUNCTIONS
 
-def get_top_amenities(listing_df, area):
-    import pandas as pd
-
-    area=area.lower()
-    listing_df = listing_df.loc[listing_df['scrape_city'] == area]
-    value_amenities = pd.merge(listing_df['amenities'], listing_df['review_scores_value'],
-                               left_index=True, right_index=True)
-    value_amenities = value_amenities.dropna()
-
+def get_top_amenities(listing_df):
     # correlating amenities with review scores
     # adapted from https://stackoverflow.com/questions/48873233/is-there-a-way-to-get-correlation-with-string-data-and-a-numerical-value-in-pand
 
-    s_corr = pd.DataFrame(value_amenities.amenities.str.get_dummies(sep=',').corrwith(
-        value_amenities.review_scores_value / value_amenities.review_scores_value.max()))
+    import pandas as pd
+    from collections import Counter
+
+    df = listing_df.copy()
+    amen_list = list(df['amenities'])
+
+    new_list = [item.strip('[]\' ""').replace(' u2013 ', ': ').replace('u2019', "'").replace('"', '') for item in
+                amen_list]
+
+    list_of_lists = []
+    for item in new_list:
+        new_item = item.split(",")
+        list_of_lists.append(new_item)
+
+    flattened = [val for sublist in list_of_lists for val in sublist]
+    counts = Counter(flattened)
+
+    high_counts = {k: c for k, c in counts.items() if c >= 300}
+
+    top_amen = list(high_counts.keys())
+
+    full_new_list = []
+    for each_list in list_of_lists:
+        new_new_list = list(set(top_amen).intersection(set(each_list)))
+        full_new_list.append(new_new_list)
+
+    df['amenities'] = full_new_list
+
+    s_corr = pd.DataFrame(df.amenities.str.get_dummies(sep=',').corrwith(
+        df.review_scores_value / df.review_scores_value.max()))
     s_corr.reset_index(inplace=True)
-    s_corr.rename(columns={'index': 'amenity', 0: 'corr'}, inplace=True)
+    s_corr.rename(columns={'index': 'amenity', 0: 'score'}, inplace=True)
 
-    review_associated_amenities = list(s_corr.sort_values(by='corr', ascending=False)['amenity'][:100])
-    corr_scores = list(s_corr.sort_values(by='corr', ascending=False)['corr'][:100])
-    corr_scores = [round(elem, 3) for elem in corr_scores]
-    top_20_amenities = [i.strip('[] ""') for i in review_associated_amenities]
+    for idx, item in enumerate(s_corr['amenity']):
+        s_corr.at[idx, 'amenity'] = s_corr.at[idx, 'amenity'].lower().strip('[]\' ""')
+    s_corr = s_corr.sort_values(by='score', ascending=False)
+    s_corr['score'] = s_corr['score'].round(3)
 
-    amenities_df = pd.DataFrame(top_20_amenities, corr_scores).reset_index()
-    amenities_df.rename(columns={'index': 'score', 0: 'amenity'}, inplace=True)
-    amenities_df = amenities_df.set_index('amenity')
+    amenities_df = s_corr.set_index('amenity')[:100]
 
     return amenities_df
 
@@ -44,10 +62,9 @@ def get_top_review_terms(reviews_df, area):
     tokenizer = RegexpTokenizer(r'\w+')
     stop_words = set(stopwords.words('english'))
     lemmatizer = WordNetLemmatizer()
-    tfIdfVectorizer = TfidfVectorizer(use_idf=True)
+    tfIdfVectorizer = TfidfVectorizer()
 
-    area = area.lower()
-    reviews_df = reviews_df.loc[reviews_df['scrape_city'] == area]
+    # reviews_df = reviews_df.loc[reviews_df['scrape_city'] == area]
 
     for idx, comment in enumerate(reviews_df['comments']):
         if comment == None:
