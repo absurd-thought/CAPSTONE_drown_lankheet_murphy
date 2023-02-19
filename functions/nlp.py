@@ -21,7 +21,7 @@ def get_top_amenities(listing_df):
     flattened = [val for sublist in list_of_lists for val in sublist]
     counts = Counter(flattened)
 
-    high_counts = {k: c for k, c in counts.items() if c >= 300}
+    high_counts = {k: c for k, c in counts.items() if c >= 500}
 
     top_amen = list(high_counts.keys())
 
@@ -42,7 +42,7 @@ def get_top_amenities(listing_df):
     s_corr = s_corr.sort_values(by='score', ascending=False)
     s_corr['score'] = s_corr['score'].round(3)
 
-    amenities_df = s_corr.set_index('amenity')[:100]
+    amenities_df = s_corr.set_index('amenity')[:20]
 
     return amenities_df
 
@@ -64,17 +64,12 @@ def get_top_review_terms(reviews_df, area):
     lemmatizer = WordNetLemmatizer()
     tfIdfVectorizer = TfidfVectorizer()
 
-    # reviews_df = reviews_df.loc[reviews_df['scrape_city'] == area]
-
-    for idx, comment in enumerate(reviews_df['comments']):
-        if comment == None:
-            comment = ""
-        reviews_df.at[idx, 'comments'] = comment.lower().strip()
+    reviews_df = reviews_df.dropna()
 
     # tokenizing
     tokens = []
     for comment in reviews_df['comments']:
-        comment = tokenizer.tokenize(comment)
+        comment = tokenizer.tokenize(comment.strip())
         tokens.append(comment)
 
     # removing stopwords
