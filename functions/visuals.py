@@ -1,19 +1,17 @@
 ## VISUALS
-def get_amenities_visual(amenities_df, amen):
+def get_amenities_visual(amenities_df):#, amen):
     '''
     Uses the listing df to create an ordered heatmap of top 20 recommended amenities
     '''
     import pandas as pd
     import altair as alt
 
-    have_data = amenities_df.loc[amen]
+    # can_add = [ame for ame in amenities_df.index if ame not in amen]
+    # add_df = amenities_df.loc[amenities_df.index.isin(can_add), :]
+    # add_df = add_df.reset_index()
+    amenities_df = amenities_df.reset_index()
 
-    can_add = [ame for ame in amenities_df.index if ame not in amen]
-    add_df = amenities_df.loc[amenities_df.index.isin(can_add), :]
-    add_df = add_df.reset_index()
-
-
-    chart = alt.Chart(add_df[:20]).mark_rect().encode(
+    chart = alt.Chart(amenities_df).mark_rect().encode(
         y=alt.Y('amenity:N', sort=alt.EncodingSortField(field='score',
                                                         order='descending'),
                 title=None,
