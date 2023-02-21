@@ -11,7 +11,10 @@ _License:_ Use and distribution of all elements herein subject to [MIT Licensing
 _Built with_ [AWS](https://aws.amazon.com/), [MySQL](https://www.mysql.com/), [Python](https://www.python.org/), and [streamlit.io](https://streamlit.io/).
 
 ## Getting started
-* Ensure that you have the latest version of Python installed. Use the code below to install the libraries needed for this project:
+* Ensure that you have the latest version of Python installed.
+* Download the Github files.
+* Open the command line and navigate to where you saved the files.
+* Use the code below to install the libraries needed for this project:
 ```
 pip install -r --upgrade requirements.txt
 ```
