@@ -48,7 +48,7 @@ def get_top_amenities(listing_df):
 
 
 ##############################################################################################################
-def get_top_review_terms(reviews_df, area):
+def get_top_review_terms(reviews_df, hostnames):
     '''
     returns df of top 5 terms most correlated with get_value_review score
     '''
@@ -58,48 +58,64 @@ def get_top_review_terms(reviews_df, area):
     from nltk.stem import WordNetLemmatizer
     from sklearn.feature_extraction.text import TfidfTransformer
     from sklearn.feature_extraction.text import TfidfVectorizer
+    from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
     tokenizer = RegexpTokenizer(r'\w+')
     stop_words = set(stopwords.words('english'))
     lemmatizer = WordNetLemmatizer()
     tfIdfVectorizer = TfidfVectorizer()
+    sid = SentimentIntensityAnalyzer()
+    punc = '!"#$%&()*+,-./:;<=>?@[\]^_`{|}~'  # from string.punctuation...removed single quote
 
     reviews_df = reviews_df.dropna()
 
     # tokenizing
     tokens = []
     for comment in reviews_df['comments']:
-        comment = tokenizer.tokenize(comment.strip())
+        comment = tokenizer.tokenize(comment.lower().strip().strip(punc))
         tokens.append(comment)
 
     # removing stopwords
+    stop_words.add('br')  # breaks in lines show up as 'br'
+    stop_words.add('s')  # 's' is a result of possessives
+
     new_tokens = []
     for item in tokens:
         new = [i for i in item if not i in stop_words]
-        new_tokens.append(new)
+        new_no_digits = [i for i in new if not i.isdigit()]  # removing numerals
+        new_tokens.append(new_no_digits)
 
     # lemmatizing
     lemms = []
     for item in new_tokens:
         l = []
         for word in item:
-            lemm = lemmatizer.lemmatize(word.lower())
+            lemm = lemmatizer.lemmatize(word)
             l.append(lemm)
         lemms.append(l)
 
-    reviews_df['lemm'] = lemms
+    # getting only positive sentiments
+    pos_lemms = []
+    for each_list in lemms:
+        lemms2 = []
+        for each_word in each_list:
+            if sid.polarity_scores(each_word)['compound'] >= 0.5 or sid.polarity_scores(each_word)['pos'] == 1.0 or \
+                    sid.polarity_scores(each_word)['neu'] == 1.0:
+                lemms2.append(each_word)
+        pos_lemms.append(lemms2)
+
+    reviews_df['lemm'] = pos_lemms
     reviews_df['lemm'] = reviews_df['lemm'].astype(str)
 
     # getting tfidf terms
     corpus = reviews_df['lemm']
 
-    tfIdfVectorizer = TfidfVectorizer(use_idf=True)
     tfIdf = tfIdfVectorizer.fit_transform(corpus)
     tfidf_df = pd.DataFrame(tfIdf[0].T.todense(), index=tfIdfVectorizer.get_feature_names_out(), columns=["TF-IDF"])
     tfidf_df = tfidf_df.sort_values('TF-IDF', ascending=False)
 
-    tfidf_df = tfidf_df.head(5)
     tfidf_df = tfidf_df.reset_index()
     tfidf_df.rename(columns={'index': 'word'}, inplace=True)
+    tfidf_df = tfidf_df[~tfidf_df['word'].isin(hostnames)]
 
-    return tfidf_df
+    return tfidf_df.head(5)
