@@ -99,8 +99,7 @@ def get_top_review_terms(reviews_df, hostnames):
     for each_list in lemms:
         lemms2 = []
         for each_word in each_list:
-            if sid.polarity_scores(each_word)['compound'] >= 0.5 or sid.polarity_scores(each_word)['pos'] == 1.0 or \
-                    sid.polarity_scores(each_word)['neu'] == 1.0:
+            if sid.polarity_scores(each_word)['compound'] >= 0.5 or sid.polarity_scores(each_word)['pos'] == 1.0:
                 lemms2.append(each_word)
         pos_lemms.append(lemms2)
 
