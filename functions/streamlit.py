@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
-
-
 import pandas as pd
 import pymysql
 from sqlalchemy import create_engine
@@ -46,7 +43,7 @@ areas_dict= {'NC':['---', 'asheville'], 'FL':['---', 'broward-county'], 'MA':['-
              'NY':['---', 'new-york-city'], 'NJ':['---', 'jersey-city', 'newark'], 'MN':['---', 'twin-cities-msa'],
              'RI':['---', 'rhode-island'],  'OR':['---', 'portland', 'salem-or'],
              'CA':['---', 'los-angeles', 'oakland', 'pacific-grove', 'san-diego', 'san-francisco',
-                   'san-mateo-county', 'santa-clara-county', 'santa-cruz-county'], 'WA': ['seattle'],
+                   'san-mateo-county', 'santa-clara-county', 'santa-cruz-county'], 'WA': ['---', 'seattle'],
              'DC':['---', 'washington-dc']
              }
 
