@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[6]:
-
-
 import pandas as pd
 import pymysql
 from sqlalchemy import create_engine 
@@ -11,33 +8,18 @@ import matplotlib.pyplot as plt
 
 from secretsfile import secrets
 
-
-# In[7]:
-
-
 endpoint = secrets.get('DATABASE_ENDPOINT')
 user = secrets.get('DATABASE_USER')
 password = secrets.get('DATABASE_PASSWORD')
 port = secrets.get('DATABASE_PORT')
 database = secrets.get('DATABASE_NAME')
 
-
-# In[8]:
-
-
 engine = create_engine(f'mysql+pymysql://{user}:{password}@{endpoint}:{port}/{database}', pool_recycle=3600);
-
-
-# In[9]:
 
 
 ################## Choropleth map with count of unique listings by state ##################################################
 query = f'SELECT scrape_city, listing_id FROM {database}.listings;'
 all_city_listings = pd.read_sql_query(query, engine)
-
-
-# In[10]:
-
 
 areas_dict= {'NC':['---', 'asheville'], 'FL':['---', 'broward-county'], 'MA':['---', 'boston', 'cambridge'], 'HI':['---', 'hawaii'],
              'IL':['---', 'chicago'], 'NV':['---', 'clark-county'], 'OH': ['---', 'columbus'], 'CO':['---', 'denver'],
@@ -48,10 +30,6 @@ areas_dict= {'NC':['---', 'asheville'], 'FL':['---', 'broward-county'], 'MA':['-
                    'san-mateo-county', 'santa-clara-county', 'santa-cruz-county'], 'WA': ['---', 'seattle'],
              'DC':['---', 'washington-dc']
              }
-
-
-# In[11]:
-
 
 def get_listings_by_state():
     import pandas as pd
@@ -72,9 +50,6 @@ def get_listings_by_state():
  
     fig.show()
 ##################################################################################################
-
-
-# In[ ]:
 
 
 
