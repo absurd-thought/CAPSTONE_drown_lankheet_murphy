@@ -22,7 +22,7 @@ query = f'SELECT scrape_city, listing_id FROM {database}.listings;'
 all_city_listings = pd.read_sql_query(query, engine)
 
 areas_dict= {'NC':['---', 'asheville'], 'FL':['---', 'broward-county'], 'MA':['---', 'boston', 'cambridge'], 'HI':['---', 'hawaii'],
-             'IL':['---', 'chicago'], 'NV':['---', 'clark-county'], 'OH': ['---', 'columbus'], 'CO':['---', 'denver'],
+             'IL':['---', 'chicago'], 'NV':['---', 'clark-county-nv'], 'OH': ['---', 'columbus'], 'CO':['---', 'denver'],
              'TX':['---', 'austin', 'dallas', 'fort-worth'], 'TN':['---', 'nashville'], 'LA':['---', 'new-orleans'],
              'NY':['---', 'new-york-city'], 'NJ':['---', 'jersey-city', 'newark'], 'MN':['---', 'twin-cities-msa'],
              'RI':['---', 'rhode-island'],  'OR':['---', 'portland', 'salem-or'],
