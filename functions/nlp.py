@@ -50,7 +50,7 @@ def get_top_amenities(listing_df):
 ##############################################################################################################
 def get_top_review_terms(reviews_df, hostnames):
     '''
-    returns df of top 5 terms most correlated with get_value_review score
+    returns df of top 10 terms most correlated with get_value_review score
     '''
     import pandas as pd
     from nltk.corpus import stopwords
@@ -117,4 +117,4 @@ def get_top_review_terms(reviews_df, hostnames):
     tfidf_df.rename(columns={'index': 'word'}, inplace=True)
     tfidf_df = tfidf_df[~tfidf_df['word'].isin(hostnames)]
 
-    return tfidf_df.head(5)
+    return tfidf_df.head(10)
