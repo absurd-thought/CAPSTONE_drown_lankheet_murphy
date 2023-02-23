@@ -33,7 +33,7 @@ def get_review_wordcloud(terms_df):
     terms_dict = terms_df.set_index('word')['TF-IDF'].to_dict()
 
     # adapted from https://stackoverflow.com/questions/61916096/word-cloud-built-out-of-tf-idf-vectorizer-function
-    cloud = WordCloud(background_color="black", max_words=5,
+    cloud = WordCloud(background_color="black", max_words=10,
                       margin=0, colormap='viridis').generate_from_frequencies(terms_dict)
 
     # adapted from https://towardsdatascience.com/simple-wordcloud-in-python-2ae54a9f58e5
