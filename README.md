@@ -8,7 +8,7 @@ _Data access statement:_ Data is public domain and may be obtained from [Inside 
 
 _License:_ Use and distribution of all elements herein subject to [MIT Licensing](https://choosealicense.com/licenses/mit/).
 
-_Built with_ [AWS](https://aws.amazon.com/), [MySQL](https://www.mysql.com/), [Python](https://www.python.org/), and [streamlit.io](https://streamlit.io/).
+_Built with_ [Python](https://www.python.org/), [MySQL](https://www.mysql.com/), [streamlit.io](https://streamlit.io/), and [AWS](https://aws.amazon.com/).
 
 ## Getting started
 * Ensure that you have the latest version of Python installed.
