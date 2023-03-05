@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
-
-
 import pandas as pd
 import pymysql
 from sqlalchemy import create_engine
@@ -46,7 +43,7 @@ areas_dict= {'NC':['---', 'asheville'], 'FL':['---', 'broward-county'], 'MA':['-
              'NY':['---', 'new-york-city'], 'NJ':['---', 'jersey-city', 'newark'], 'MN':['---', 'twin-cities-msa'],
              'RI':['---', 'rhode-island'],  'OR':['---', 'portland', 'salem-or'],
              'CA':['---', 'los-angeles', 'oakland', 'pacific-grove', 'san-diego', 'san-francisco',
-                   'san-mateo-county', 'santa-clara-county', 'santa-cruz-county'], 'WA': ['seattle'],
+                   'san-mateo-county', 'santa-clara-county', 'santa-cruz-county'], 'WA': ['---', 'seattle'],
              'DC':['---', 'washington-dc']
              }
 
@@ -60,6 +57,7 @@ def get_hostnames(area):
     query = f'SELECT host_name FROM {database}.listings WHERE scrape_city={area_quotes};'
     host_names = pd.read_sql_query(query, engine)
     hostnames = set(host_names.host_name)
+    hostnames = {hn.lower() for hn in hostnames}
     return hostnames
     
 
@@ -104,6 +102,10 @@ else:
             reviews = load_reviews(area)
             data_load_state.text('Loading reviews data...done!')
 
+            data_load_state = st.text('Almost ready...')
+            hostnames = get_hostnames(area)
+            data_load_state.text('Ready!')
+
             import pyautogui
             if st.button("Reset"):
                 from streamlit import caching
@@ -122,7 +124,7 @@ else:
                 amenities_df = nlp.get_top_amenities(listings)
                 data_load_state.text('Getting top amenities...done!')
 
-                # amen = st.multiselect("Choose your available amenities from these top 20:", set(df.index))
+                # amen = st.multiselect("Choose your available amenities from these top 20:", set(amenities_df.index))
                 # if amen:
 
                 data_load_state = st.text('Creating amenities chart...')
@@ -130,7 +132,7 @@ else:
                 data_load_state.text('Creating amenities chart...done!')
 
                 st.subheader('Try adding these amenities to increase value')
-                st.text('These amenities were associated with higher value review scores in your area.')
+                st.text('(These amenities were associated with higher value review scores in your area.)')
 
                 st.altair_chart(amen_chart, use_container_width=False)
 
@@ -138,13 +140,13 @@ else:
             with tab3:
                 st.header("Descriptive Terms")
 
-                data_load_state = st.text('Getting top descriptive terms...')
-                terms_df = nlp.get_top_review_terms(reviews, area)
+                data_load_state = st.text('Getting top descriptive terms (this may take a while)...')
+                terms_df = nlp.get_top_review_terms(reviews, hostnames)
                 data_load_state.text('Getting top descriptive terms...done!')
 
 
                 st.subheader('Try incorporating these terms into your listing description to add value')
-                st.text('These terms were associated with the top value scores in your area.')
+                st.text('(These terms were associated with the top value scores in your area.)')
                 col1, col2, col3 = st.columns(3)
 
                 data_load_state = st.text('Creating terms chart...')
@@ -153,7 +155,3 @@ else:
 
                 st.set_option('deprecation.showPyplotGlobalUse', False)
                 col1.pyplot(terms_chart, use_container_width=False)
-
-
-
-
