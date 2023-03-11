@@ -53,6 +53,8 @@ def get_top_review_terms(reviews_df, hostnames):
     returns df of top 10 terms most correlated with get_value_review score
     '''
     import pandas as pd
+    import nltk
+    nltk.download('stopwords')
     from nltk.corpus import stopwords
     from nltk.tokenize import RegexpTokenizer
     from nltk.stem import WordNetLemmatizer
