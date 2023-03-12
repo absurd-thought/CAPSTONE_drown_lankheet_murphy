@@ -17,7 +17,6 @@ st.set_page_config(layout="wide", page_title='And That Means Comfort', page_icon
                    }
                    )
 
-
 ## connecting to database
 endpoint = secrets.get('DATABASE_ENDPOINT')
 user = secrets.get('DATABASE_USER')
@@ -27,18 +26,26 @@ database = secrets.get('DATABASE_NAME')
 
 engine = create_engine(f'mysql+pymysql://{user}:{password}@{endpoint}:{port}/{database}', pool_recycle=3600);
 
+## get_hostnames function
+def get_hostnames(area):
+    # get host names to remove from review terms
+    area_quotes = "'" + area + "'"
+    query = f'SELECT host_name FROM {database}.listings WHERE scrape_city={area_quotes};'
+    host_names = pd.read_sql_query(query, engine)
+    hostnames = set(host_names.host_name)
+    hostnames = {hn.lower() for hn in hostnames}
+    return hostnames
 
 ## adding title to streamlit.io
 st.title(":blue[And That Means Comfort: Optimizing Airbnb Listings]")
 st.subheader("Find out which amenities add the most value to your home, explore terms to include in your description,"
-             " and predict your best price!")
-
+             " and predict your best price!*")
 
 
 states_list = ['NC','FL','MA','IL','NV','OH','CO','TX','HI','TN','LA','NY','NJ','RI','OR','CA',
                'WA','MN','DC']
 areas_dict= {'NC':['---', 'asheville'], 'FL':['---', 'broward-county'], 'MA':['---', 'boston', 'cambridge'], 'HI':['---', 'hawaii'],
-             'IL':['---', 'chicago'], 'NV':['---', 'clark-county'], 'OH': ['---', 'columbus'], 'CO':['---', 'denver'],
+             'IL':['---', 'chicago'], 'NV':['---', 'clark-county-nv'], 'OH': ['---', 'columbus'], 'CO':['---', 'denver'],
              'TX':['---', 'austin', 'dallas', 'fort-worth'], 'TN':['---', 'nashville'], 'LA':['---', 'new-orleans'],
              'NY':['---', 'new-york-city'], 'NJ':['---', 'jersey-city', 'newark'], 'MN':['---', 'twin-cities-msa'],
              'RI':['---', 'rhode-island'],  'OR':['---', 'portland', 'salem-or'],
@@ -50,16 +57,6 @@ areas_dict= {'NC':['---', 'asheville'], 'FL':['---', 'broward-county'], 'MA':['-
 
 states_list=sorted(states_list)
 states_list.insert(0, '---')
-
-## FUNCTIONS
-def get_hostnames(area):
-    area_quotes = "'" + area + "'"
-    query = f'SELECT host_name FROM {database}.listings WHERE scrape_city={area_quotes};'
-    host_names = pd.read_sql_query(query, engine)
-    hostnames = set(host_names.host_name)
-    hostnames = {hn.lower() for hn in hostnames}
-    return hostnames
-    
 
 ## STREAMLIT
 st.subheader("Choose your state")
@@ -131,10 +128,11 @@ else:
                 amen_chart = visuals.get_amenities_visual(amenities_df)
                 data_load_state.text('Creating amenities chart...done!')
 
-                st.subheader('Try adding these amenities to increase value')
-                st.text('(These amenities were associated with higher value review scores in your area.)')
+                st.subheader('Try adding these amenities')
+                st.text('(These amenities are associated with higher value review scores in your area. By adding them to your listing,\nyou increase your listing\'s perception of value**)')
 
                 st.altair_chart(amen_chart, use_container_width=False)
+                st.text('**Only add amentities that you actually provide!')
 
 
             with tab3:
@@ -145,8 +143,8 @@ else:
                 data_load_state.text('Getting top descriptive terms...done!')
 
 
-                st.subheader('Try incorporating these terms into your listing description to add value')
-                st.text('(These terms were associated with the top value scores in your area.)')
+                st.subheader('Try incorporating these terms into your listing description')
+                st.text('(These terms are associated with positive reviews in your area. By incorporating them into your listing\'s description,\nyou create a psychological connection between good reviews and your property.)')
                 col1, col2, col3 = st.columns(3)
 
                 data_load_state = st.text('Creating terms chart...')
@@ -154,4 +152,11 @@ else:
                 data_load_state.text('Creating terms chart...done!')
 
                 st.set_option('deprecation.showPyplotGlobalUse', False)
-                col1.pyplot(terms_chart, use_container_width=False)
+                col1.pyplot(terms_chart)#, use_container_width=False)
+
+st.text(' ')
+st.text(' ')
+st.text(' ')
+st.text(' ')
+st.text(' ')
+st.text('*Results are meant to enhance listings, not guarantee income.')
