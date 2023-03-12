@@ -1,5 +1,6 @@
 ## NLP FUNCTIONS
 
+##############################################################################################################
 def get_top_amenities(listing_df):
     # correlating amenities with review scores
     # adapted from https://stackoverflow.com/questions/48873233/is-there-a-way-to-get-correlation-with-string-data-and-a-numerical-value-in-pand
@@ -10,8 +11,7 @@ def get_top_amenities(listing_df):
     df = listing_df.copy()
     amen_list = list(df['amenities'])
 
-    new_list = [item.strip('[]\' ""').replace(' u2013 ', ': ').replace('u2019', "'").replace('"', '') for item in
-                amen_list]
+    new_list = [item.strip('[]\' ""').replace('"', '') for item in amen_list] #.replace(' u2013 ', ': ').replace('u2019', "'")
 
     list_of_lists = []
     for item in new_list:
@@ -46,30 +46,27 @@ def get_top_amenities(listing_df):
 
     return amenities_df
 
-
 ##############################################################################################################
 def get_top_review_terms(reviews_df, hostnames):
     '''
-    returns df of top 10 terms most correlated with get_value_review score
+    returns df of top 10 review terms by frequency
     '''
     import pandas as pd
     import nltk
-    nltk.download('stopwords')
+    from collections import Counter
+    nltk.download('stopwords', quiet=True)
+    nltk.download('wordnet', quiet=True)
+    nltk.download('omw-1.4', quiet=True)
     from nltk.corpus import stopwords
     from nltk.tokenize import RegexpTokenizer
     from nltk.stem import WordNetLemmatizer
-    from sklearn.feature_extraction.text import TfidfTransformer
-    from sklearn.feature_extraction.text import TfidfVectorizer
     from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
     tokenizer = RegexpTokenizer(r'\w+')
     stop_words = set(stopwords.words('english'))
     lemmatizer = WordNetLemmatizer()
-    tfIdfVectorizer = TfidfVectorizer()
     sid = SentimentIntensityAnalyzer()
-    punc = '!"#$%&()*+,-./:;<=>?@[\]^_`{|}~'  # from string.punctuation...removed single quote
-
-    reviews_df = reviews_df.dropna()
+    punc = '!"#$%&()*+,-./:;<=>?@[\]^_`{|}~'  # from string.punctuation...removed apostrophe
 
     # tokenizing
     tokens = []
@@ -85,7 +82,8 @@ def get_top_review_terms(reviews_df, hostnames):
     for item in tokens:
         new = [i for i in item if not i in stop_words]
         new_no_digits = [i for i in new if not i.isdigit()]  # removing numerals
-        new_tokens.append(new_no_digits)
+        new_no_hosts = [i for i in new_no_digits if not i in hostnames]  # removing hostnames
+        new_tokens.append(new_no_hosts)
 
     # lemmatizing
     lemms = []
@@ -97,26 +95,19 @@ def get_top_review_terms(reviews_df, hostnames):
         lemms.append(l)
 
     # getting only positive sentiments
-    pos_lemms = []
+    pos_tokens = []
     for each_list in lemms:
-        lemms2 = []
+        tok2 = []
         for each_word in each_list:
             if sid.polarity_scores(each_word)['compound'] >= 0.5 or sid.polarity_scores(each_word)['pos'] == 1.0:
-                lemms2.append(each_word)
-        pos_lemms.append(lemms2)
+                tok2.append(each_word)
+        pos_tokens.append(tok2)
 
-    reviews_df['lemm'] = pos_lemms
-    reviews_df['lemm'] = reviews_df['lemm'].astype(str)
+    flat_list_corpus = [item for sublist in pos_tokens for item in sublist]
+    c = Counter(flat_list_corpus)
+    data = c.most_common(10)
+    df = pd.DataFrame.from_records(data, columns=['term', 'freq'])
 
-    # getting tfidf terms
-    corpus = reviews_df['lemm']
+    return df
 
-    tfIdf = tfIdfVectorizer.fit_transform(corpus)
-    tfidf_df = pd.DataFrame(tfIdf[0].T.todense(), index=tfIdfVectorizer.get_feature_names_out(), columns=["TF-IDF"])
-    tfidf_df = tfidf_df.sort_values('TF-IDF', ascending=False)
-
-    tfidf_df = tfidf_df.reset_index()
-    tfidf_df.rename(columns={'index': 'word'}, inplace=True)
-    tfidf_df = tfidf_df[~tfidf_df['word'].isin(hostnames)]
-
-    return tfidf_df.head(10)
+##############################################################################################################
