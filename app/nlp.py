@@ -11,32 +11,40 @@ def get_top_amenities(listing_df):
     df = listing_df.copy()
     amen_list = list(df['amenities'])
 
+    # clean extraneous marks
     new_list = [item.strip('[]\' ""').replace('"', '') for item in amen_list] #.replace(' u2013 ', ': ').replace('u2019', "'")
 
+    # split cleaned ammenities on comma
     list_of_lists = []
     for item in new_list:
         new_item = item.split(",")
         list_of_lists.append(new_item)
 
+    # flatten list of lists, then count number of occurrences
     flattened = [val for sublist in list_of_lists for val in sublist]
     counts = Counter(flattened)
 
+    # get counts that are above 500 too keep correlation above 10%
     high_counts = {k: c for k, c in counts.items() if c >= 500}
 
     top_amen = list(high_counts.keys())
 
+    # find intersection of top amenities with original list
     full_new_list = []
     for each_list in list_of_lists:
         new_new_list = list(set(top_amen).intersection(set(each_list)))
         full_new_list.append(new_new_list)
 
+    # add column to dataframe
     df['amenities'] = full_new_list
 
+    # get correlation of value review scores and each amenity in new dataframe
     s_corr = pd.DataFrame(df.amenities.str.get_dummies(sep=',').corrwith(
         df.review_scores_value / df.review_scores_value.max()))
     s_corr.reset_index(inplace=True)
     s_corr.rename(columns={'index': 'amenity', 0: 'score'}, inplace=True)
 
+    # clean new dataframe and sort values
     for idx, item in enumerate(s_corr['amenity']):
         s_corr.at[idx, 'amenity'] = s_corr.at[idx, 'amenity'].lower().strip('[]\' ""')
     s_corr = s_corr.sort_values(by='score', ascending=False)
