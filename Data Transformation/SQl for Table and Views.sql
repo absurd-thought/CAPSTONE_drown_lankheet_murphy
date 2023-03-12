@@ -123,6 +123,14 @@ select r.* from reviews_stage r
 update reviews_stage 
 set comments = replace(comments, 'u2013', '-')
 
+/*replacing
+u2013
+u2019
+’
+\
+[]
+*/
+
 /*statement to get average availability*/
 select distinct
 listing_id 

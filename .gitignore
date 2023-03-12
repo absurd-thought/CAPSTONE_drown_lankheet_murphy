@@ -3,3 +3,4 @@
 *.gz
 secretsPaul.ipynb
 secretsPaul.py
+app/secretsfile.py
