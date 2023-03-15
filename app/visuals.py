@@ -19,24 +19,30 @@ def get_amenities_visual(amenities_df):#, amen):
     return chart
 
 ################################################################################################################
-def get_review_wordcloud(terms_df):
+def get_review_wordcloud(terms_df, pos_or_neg):
     '''
-    Uses the terms_df to make a word cloud of top 10 review terms
+    Uses the terms_df to make a word cloud of top (up to) 10 review terms
+    pos_or_neg = string of 'pos' or 'neg'
     '''
     import pandas as pd
     from wordcloud import WordCloud
     import matplotlib.pyplot as plt
 
-    terms_dict = terms_df.set_index('term')['freq'].to_dict()
+    terms_dict = terms_df.set_index(pos_or_neg+'_word')[pos_or_neg+'_score'].to_dict()
 
     # adapted from https://stackoverflow.com/questions/61916096/word-cloud-built-out-of-tf-idf-vectorizer-function
-    cloud = WordCloud(background_color='#0e1117', max_words=10,
-                      margin=0, colormap='winter').generate_from_frequencies(terms_dict)
+    if pos_or_neg == 'pos':
+        cloud = WordCloud(background_color='#0e1117', max_words=10,
+                          margin=0, colormap='winter').generate_from_frequencies(terms_dict)
+    else:
+         cloud = WordCloud(background_color='#0e1117', max_words=10,
+                          margin=0, colormap='autumn').generate_from_frequencies(terms_dict)       
 
     # adapted from https://towardsdatascience.com/simple-wordcloud-in-python-2ae54a9f58e5
     def plot_cloud(wordcloud):
-        plt.figure(figsize=(6, 4))
+        plt.figure(figsize=(6, 4),)
         plt.imshow(wordcloud)
         plt.axis("off")
         plt.tight_layout(pad=0);
+
     return plot_cloud(cloud)
