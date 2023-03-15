@@ -103,7 +103,7 @@ def get_top_review_terms(reviews_df, hostnames):
     for item in lemms:
         new = [i for i in item if not i in stop_words]  # removing stop words
         new_no_digits = [i for i in new if not i.isdigit()]  # removing numerals
-        new_no_hosts = [i for i in new_no_digits if not i in hostnames2]  # removing hostnames
+        new_no_hosts = [i for i in new_no_digits if not i in hostnames]  # removing hostnames
         new_tokens.append(new_no_hosts)
 
     # getting positive and negative sentiments
