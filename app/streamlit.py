@@ -163,6 +163,9 @@ else:
                 data_load_state = st.text('Creating negative terms chart...')
                 terms_chart2 = visuals.get_review_wordcloud(terms_df, 'neg')
                 data_load_state.text('Creating negative terms chart...done!')
+                
+                st.set_option('deprecation.showPyplotGlobalUse', False)
+                col1.pyplot(terms_chart2)  # , use_container_width=False)
 
 # adding space
 st.text(' ')
