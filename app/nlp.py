@@ -61,13 +61,14 @@ def get_top_review_terms(reviews_df, hostnames):
     '''
     import pandas as pd
     import nltk
-    nltk.download('stopwords', quiet=True)	
-    nltk.download('wordnet', quiet=True)	
-    nltk.download('omw-1.4', quiet=True)
     from nltk.corpus import stopwords
     from nltk.tokenize import RegexpTokenizer
     from nltk.stem import WordNetLemmatizer
+    nltk.download('stopwords', quiet=True)		
+    nltk.download('wordnet', quiet=True)		
+    nltk.download('omw-1.4', quiet=True)
     from sklearn.feature_extraction.text import TfidfVectorizer
+    nltk.download('wordnet', quiet=True)
     from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
     tokenizer = RegexpTokenizer(r'\w+')
