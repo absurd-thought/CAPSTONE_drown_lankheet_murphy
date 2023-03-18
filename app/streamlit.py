@@ -118,7 +118,7 @@ else:
 
             with tab1:
                 st.header("Pricing")
-                st.text("How should you price your home? These are the top price-influencing factors in your area."
+                st.text("How should you price your home? These are the top price-influencing factors in your area.")
 
             with tab2:
                 st.header("Amenities")
