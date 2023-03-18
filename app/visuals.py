@@ -6,6 +6,7 @@ def get_amenities_visual(amenities_df):#, amen):
     import pandas as pd
     import altair as alt
 
+
     amenities_df = amenities_df.reset_index()
 
     chart = alt.Chart(amenities_df).mark_rect().encode(
@@ -40,9 +41,11 @@ def get_review_wordcloud(terms_df, pos_or_neg):
 
     # adapted from https://towardsdatascience.com/simple-wordcloud-in-python-2ae54a9f58e5
     def plot_cloud(wordcloud):
-        plt.figure(figsize=(6, 4),)
+        plt.figure(figsize=(6,4), facecolor='#0e1117')
         plt.imshow(wordcloud)
         plt.axis("off")
         plt.tight_layout(pad=0);
 
-    return plot_cloud(cloud)
+        plt.savefig('cloud.png', format='png', bbox_inches='tight', pad_inches=0)
+
+    plot_cloud(cloud)
