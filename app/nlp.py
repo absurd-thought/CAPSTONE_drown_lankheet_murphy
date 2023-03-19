@@ -61,18 +61,17 @@ def get_top_review_terms(reviews_df, hostnames):
     '''
     import pandas as pd
     import nltk
-    nltk.download('stopwords', quiet=True)	
-    nltk.download('wordnet', quiet=True)	
-    nltk.download('omw-1.4', quiet=True)
     from nltk.corpus import stopwords
     from nltk.tokenize import RegexpTokenizer
     from nltk.stem import WordNetLemmatizer
+    nltk.download('stopwords', quiet=True)
+    nltk.download('wordnet', quiet=True)
+    nltk.download('omw-1.4', quiet=True)
     from sklearn.feature_extraction.text import TfidfVectorizer
     from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
     tokenizer = RegexpTokenizer(r'\w+')
     stop_words = set(stopwords.words('english'))
-    stop_words.extend(['problems','problem','recommend', 'best'])
     lemmatizer = WordNetLemmatizer()
     tfIdfVectorizer = TfidfVectorizer()
     sid = SentimentIntensityAnalyzer()
@@ -83,10 +82,12 @@ def get_top_review_terms(reviews_df, hostnames):
                        'sure', 'thanks', 'thank', 'love', 'better', 'want', 'cool', 'hope', 'truly', 'appreciate',
                        'wish', 'okay',
                        'save', 'yes', 'no', 'share', 'number', 'br', 's', 'u', 'l', 'ok', 'amaze', 'excellent',
-                       'fantastic',
-                       'awesome', 'friend', 'kind', 'help']
-    for word in more_stop_words:
+                       'fantastic', 'recommend', 'best',
+                       'awesome', 'friend', 'kind', 'help', 'problem', 'problems', 'worth']
+    for word in more_stop_words: # removing valueless words that appear often
         stop_words.add(word)
+    for name in hostnames: # removing host names
+        stop_words.add(name)
 
     # tokenizing
     tokens = []
@@ -104,8 +105,7 @@ def get_top_review_terms(reviews_df, hostnames):
     for item in lemms:
         new = [i for i in item if not i in stop_words]  # removing stop words
         new_no_digits = [i for i in new if not i.isdigit()]  # removing numerals
-        new_no_hosts = [i for i in new_no_digits if not i in hostnames]  # removing hostnames
-        new_tokens.append(new_no_hosts)
+        new_tokens.append(new_no_digits)
 
     # getting positive and negative sentiments
     pos_lemms = []
