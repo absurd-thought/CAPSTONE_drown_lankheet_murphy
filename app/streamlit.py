@@ -28,16 +28,6 @@ database = secrets.get('DATABASE_NAME')
 
 engine = create_engine(f'mysql+pymysql://{user}:{password}@{endpoint}:{port}/{database}', pool_recycle=3600);
 
-## get_hostnames function
-def get_hostnames(area):
-    # get host names to remove from review terms
-    area_quotes = "'" + area + "'"
-    query = f'SELECT host_name FROM {database}.listings WHERE scrape_city={area_quotes};'
-    host_names = pd.read_sql_query(query, engine)
-    hostnames = set(host_names.host_name)
-    hostnames = {hn.lower() for hn in hostnames}
-    return hostnames
-
 ## adding title to streamlit.io
 st.title(":blue[And That Means Comfort: Optimizing Airbnb Listings]")
 st.subheader("Find out which amenities add the most perceived value to your home, explore terms to include in your description,"
@@ -77,23 +67,23 @@ else:
         if clicked:
             # getting listings df
             @st.cache_resource
-            def load_listings(area):
+            def load_amenities(area):
                 area_quotes = "'" + area + "'"
-                query = f'SELECT amenities, review_scores_value FROM {database}.listings WHERE scrape_city={area_quotes};'
-                listings = pd.read_sql_query(query, engine)
-                return listings
+                query = f'SELECT amenity, score FROM {database}.top_amenities WHERE scrape_city={area_quotes};'
+                amenities = pd.read_sql_query(query, engine)
+                return amenities
 
 
-            data_load_state = st.text('Please wait while we load the listing data...')
-            listings = load_listings(area)
-            data_load_state.text('Loading listing data...done!')
+            data_load_state = st.text('Please wait while we load the amenities data...')
+            amenities = load_amenities(area)
+            data_load_state.text('Loading amenities data...done!')
 
 
             ## getting reviews df
             @st.cache_resource
             def load_reviews(area):
                 area_quotes = "'" + area + "'"
-                query = f'SELECT comments FROM {database}.reviews WHERE scrape_city={area_quotes};'
+                query = f'SELECT pos_word, pos_score, neg_word, neg_score FROM {database}.top_reviews WHERE scrape_city={area_quotes};'
                 reviews = pd.read_sql_query(query, engine)
                 return reviews
 
@@ -101,10 +91,6 @@ else:
             data_load_state = st.text('Please wait while we load the reviews data...')
             reviews = load_reviews(area)
             data_load_state.text('Loading reviews data...done!')
-
-            data_load_state = st.text('Almost ready...')
-            hostnames = get_hostnames(area)
-            data_load_state.text('Ready!')
 
             # adding reset button
             import pyautogui
@@ -123,20 +109,12 @@ else:
             with tab2:
                 st.header("Amenities")
 
-                # get amenities visual
-                data_load_state = st.text('Getting top amenities...')
-                area_quotes = "'" + area + "'"
-                query = f'Select amenity, score from {database}.top_amenities WHERE scrape_city={area_quotes};'
-                amenities_df = pd.read_sql_query(query, engine)
-                amenities_df.set_index('amenity',inplace=True)
-                data_load_state.text('Getting top amenities...done!')
-
                 data_load_state = st.text('Creating amenities chart...')
-                amen_chart = visuals.get_amenities_visual(amenities_df)
+                amen_chart = visuals.get_amenities_visual(amenities)
                 data_load_state.text('Creating amenities chart...done!')
 
                 st.subheader('Try adding these amenities')
-                st.text('These amenities are associated with higher value review scores in your area. By adding them to your listing, you increase your listing\'s perception of value.**')
+                st.text('These amenities are associated with higher value review scores in your area. By adding them to your listing, you increase your listing\'s perception of value after a stay.**')
 
                 st.altair_chart(amen_chart, use_container_width=False)
                 st.text('**Only add amentities that you actually provide!')
@@ -145,29 +123,29 @@ else:
             with tab3:
                 st.header("Description")
 
-                # get review terms word cloud
-                data_load_state = st.text('Getting top descriptive terms (this may take a while)...')
-                terms_df = nlp.get_top_review_terms(reviews, hostnames)
-                data_load_state.text('Getting top descriptive terms...done!')
-
-
                 st.subheader('Try incorporating these terms into your listing description')
                 st.text('These terms are associated with positive reviews in your area. By incorporating them into your listing\'s description, you create a psychological connection between good reviews and your property.')
                 col1, col2, col3 = st.columns(3)
 
                 data_load_state = st.text('Creating positive terms chart...')
-                terms_chart = visuals.get_review_wordcloud(terms_df, 'pos')
+                visuals.get_review_wordcloud(reviews, 'pos')
                 data_load_state.text('Creating positive terms chart...done!')
 
-                st.set_option('deprecation.showPyplotGlobalUse', False)
-                col1.pyplot(terms_chart)#, use_container_width=False)
+                st.image('cloud.png')
 
-                st.text('What do the negative reviews say? These are terms you want to avoid.')
+                # adding space
+                st.text(' ')
+                st.text(' ')
+                st.text(' ')
+                st.text(' ')
+                st.text(' ')
+                st.subheader('What do the negative reviews say? These are terms and situations you want to avoid.')
                 data_load_state = st.text('Creating negative terms chart...')
-                terms_chart2 = visuals.get_review_wordcloud(terms_df, 'neg')
+                visuals.get_review_wordcloud(reviews, 'neg')
                 data_load_state.text('Creating negative terms chart...done!')
-                st.set_option('deprecation.showPyplotGlobalUse', False)
-                col1.pyplot(terms_chart2)  # , use_container_width=False)
+
+                st.image('cloud.png')
+
 
 # adding space
 st.text(' ')
@@ -176,5 +154,3 @@ st.text(' ')
 st.text(' ')
 st.text(' ')
 st.text('*Results are meant to enhance listings, not guarantee income.')
-
-
