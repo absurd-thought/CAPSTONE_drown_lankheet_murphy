@@ -37,11 +37,11 @@ Now you can run the .py files.
 * Run the (DATABASE PY FILE NAME HERE) file.
 
 ## Creating and hosting your streamlit.io app
-* Download the folder (STREAMLIT FOLDER NAME HERE) from the repository.
-* Open the command line and navigate to where you saved <streamlit.py>.
+* Download the folder "app" from the repository.
+* Open the command line and navigate to where you saved <About.py>.
 * Run the following command:
 ```
-streamlit run streamlit.py
+streamlit run About.py
 ```
 * To host your app on AWS, follow [this guide](https://towardsdatascience.com/how-to-deploy-a-streamlit-app-using-an-amazon-free-ec2-instance-416a41f69dc3), modifying as necessary.
 
