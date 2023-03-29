@@ -6,7 +6,7 @@ import streamlit as st
 # setting page configuration
 st.set_page_config(layout="wide", page_title='And That Means Comfort', page_icon='https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f9d9-200d-2642-fe0f.png',
                    menu_items={
-                       'About': "Check out our Github page at "
+                       'About': "A UMSI Capstone project"
                    }
                    )
 
