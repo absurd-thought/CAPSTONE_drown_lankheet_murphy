@@ -7,23 +7,19 @@ def load_city_amenities(city):
     import mysql.connector
     
     #Connect to DB, clear any previous amenities for selected city
-    connect=mysql.connector.connect(host=endpoint, database='Capstone', user=user, password=password)
+    connect= mysql.connector.connect(host=endpoint, database='Capstone', user=user, password=password)
     cursor = connect.cursor()
-    delete_sql = "DELETE FROM pricing_features WHERE City = '" + city +"'"
+    delete_sql = "DELETE FROM pricing_features WHERE scrape_city = '" + city +"'"
     cursor.execute(delete_sql)
     connect.commit()
 
     #collect all listings for selected city, put in df
-    query_text = "SELECT * FROM listing_detail_stage WHERE scrape_city = '" + city +"'"
+    query_text = "SELECT * FROM recent_listings_occup WHERE scrape_city = '" + city +"'"
     sql_query = pd.read_sql_query(query_text, connect)
 
     df = pd.DataFrame(sql_query)
-    df = df[['host_response_time', 'host_response_rate',
-       'host_acceptance_rate', 'room_type', 'accommodates',
-       'bathrooms_text', 'bedrooms', 'beds', 'amenities', 'price',
-       'minimum_nights', 'maximum_nights', 'number_of_reviews',
-       'license', 'instant_bookable',
-       'scrape_city']]
+    df = df[['room_type', 'accommodates', 'bathrooms_text', 'bedrooms', 'beds', 'amenities', 'price', 'number_of_reviews',
+       'license', 'instant_bookable', 'scrape_city']]
     
     #clean extra punctuation from amenities
     df['amenities']=[c.strip('[]\' ""') for c in df['amenities']]
@@ -37,7 +33,6 @@ def load_city_amenities(city):
     pred_columns = list(df.columns)
     pred_columns.remove('price')
     pred_columns.remove('amenities')
-    df['host_response_time']=df['host_response_time'].map({'within an hour':1, 'within a few hours':2,'within a day':3,'a few days or more':4, '':5 })
     df['room_type']=df['room_type'].map({'Entire home/apt':1, 'Private room':2, 'Shared room':3, 'Hotel room':4})
     df['bathrooms_text']=df['bathrooms_text'].str.extract(r'(\d(?:.\d)?)').fillna(0)
     pred_columns.remove('scrape_city')
@@ -65,18 +60,33 @@ def load_city_amenities(city):
     print(city)
     for i in scores:
         placeloc = np.where(skb_selector.scores_==i)[0][0]
-        print(pred_columns[placeloc], i)
+        #print(pred_columns[placeloc], i)
         amenities.append(pred_columns[placeloc])
     
-    #create a table of city, amenity, and score for the top 20, ensure connection to db and push
-    amenities_df = pd.DataFrame({'City': [city] * 20, 'Amenity': amenities, 'Score' : scores})
+    #Ensure all numerical features are present
+    predefined_list = ['bedrooms', 'bathrooms_text', 'beds','accommodates', 'room_type']
+    predefined_scores = dict(zip(pred_columns[:5],skb_selector.scores_[:5]))
+    for feature in predefined_list:
+        if feature not in amenities:
+            amenities.insert(0,feature)
+            scores.insert(0,predefined_scores[feature])
 
-    insert_sql = "REPLACE INTO pricing_features (City, Amenity, Score) VALUES (%s, %s, %s)"
+    #create a table of city, amenity, and score for the top 20, ensure connection to db and push
+    amenities_df = pd.DataFrame({'scrape_city': [city] * 20, 'amenity': amenities[:20], 'score' : scores[:20]})
+
+
+    #sort numerical and boolean
+    remains = [word for word in amenities_df['amenity'] if word not in predefined_list]
+    sort_order = predefined_list + remains
+    amenities_df.sort_values(by="amenity", key=lambda column: column.map(lambda e: sort_order.index(e)), inplace = True)
+
+    insert_sql = "REPLACE INTO pricing_features (scrape_city, amenity, score) VALUES (%s, %s, %s)"
     connect=mysql.connector.connect(host=endpoint, database='Capstone', user=user, password=password)
     cursor = connect.cursor()
 
     cursor.executemany(insert_sql, list(amenities_df.itertuples(index=False, name = None)))
     connect.commit()
+
 
 
 endpoint = secrets.get('DATABASE_ENDPOINT')
@@ -89,5 +99,5 @@ connect=mysql.connector.connect(host=endpoint, database='Capstone', user=user, p
 cursor = connect.cursor()
 import pandas as pd
 citylist = pd.read_sql_query (''' select distinct scrape_city from listing_detail_stage''', connect)
-for city in citylist['scrape_city'][11:]:
+for city in citylist['scrape_city']:
     load_city_amenities(city)
