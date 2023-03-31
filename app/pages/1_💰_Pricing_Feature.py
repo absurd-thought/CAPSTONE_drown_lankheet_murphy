@@ -74,7 +74,7 @@ else:
         # st.header("Pricing")
         st.subheader("How should you price your home? Select your setup.")
 
-        c1, c2, c3, c4 = st.columns(4)
+        c1, c2, c3, c4, c5 = st.columns(5)
 
         placeholder = st.empty()
         with c1:
@@ -88,7 +88,10 @@ else:
             beds = placeholder3.number_input('How many beds?', step=1, format='%d')
         with c4:
             placeholder4 = st.empty()
-            ppl = placeholder4.number_input('Accommodates how many people?', step=1, format='%d')
+            ppl = placeholder4.number_input('Accommodates how many?', step=1, format='%d')
+        with c5:
+            placeholder5 = st.empty()
+            list_type = placeholder5.selectbox('What is the listing type?', ('Entire home/apt', 'Private room', 'Shared room', 'Hotel room'))
 
         # adding reset button
         click_clear = st.button('Reset', key='clear')
@@ -96,12 +99,12 @@ else:
             rooms = placeholder1.number_input('How many bedrooms?', value=0, key='rooms')
             baths = placeholder2.number_input('How many bathrooms?', step=0.5, format='%1f', value=0.0, key='baths')
             beds = placeholder3.number_input('How many beds?', value=0, key='beds')
-            ppl = placeholder4.number_input('Accommodates how many people?', value=0, key='ppl')
+            ppl = placeholder4.number_input('Accommodates how many?', value=0, key='ppl')
+            
 
         with st.form("price_form"):
-        # getting list of first 4 config spots
+            # getting list of first 4 config spots
             first_four = [rooms, baths, beds, ppl]
-
 
             # loading pricing data
             data_load_state = st.text('Please wait while we load the pricing data...')
@@ -116,7 +119,7 @@ else:
             select_df = pricing_data[pricing_data.amenity.isin(amen) == True]
             # select_df = select_df.set_index('amenity')
 
-            amenities_for_pricing = pricing.get_numeric_vals(amen, first_four, select_df)
+            amenities_for_pricing = pricing.get_numeric_vals(amen, first_four, select_df, list_type)
             price = pricing.predict_price(area, amenities_for_pricing)
 
 
