@@ -1,6 +1,6 @@
 import pandas as pd
 import pymysql
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 import streamlit as st
 from secretsfile import secrets
 import visuals
@@ -59,7 +59,7 @@ else:
             def load_reviews(area):
                 area_quotes = "'" + area + "'"
                 query = f'SELECT pos_word, pos_score, neg_word, neg_score FROM {database}.top_reviews WHERE scrape_city={area_quotes};'
-                reviews = pd.read_sql_query(query, engine)
+                reviews = pd.read_sql_query(sql=text(query), con=engine.connect())
                 return reviews
             
             # adding messages so user knows it's working

@@ -1,0 +1,8 @@
+streamlit
+pandas
+altair
+wordcloud
+matplotlib
+numpy
+pymysql
+sqlalchemy

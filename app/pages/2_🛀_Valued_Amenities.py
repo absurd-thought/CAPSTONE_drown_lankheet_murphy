@@ -2,7 +2,7 @@
 
 import pandas as pd
 import pymysql
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine,text
 import streamlit as st
 from secretsfile import secrets
 import visuals
@@ -61,7 +61,7 @@ else:
             def load_amenities(area):
                 area_quotes = "'" + area + "'"
                 query = f'SELECT amenity, score FROM {database}.top_amenities WHERE scrape_city={area_quotes};'
-                amenities = pd.read_sql_query(query, engine)
+                amenities = pd.read_sql_query(sql=text(query), con=engine.connect())
                 return amenities
 
             st.header("Amenities")

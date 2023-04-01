@@ -1,10 +1,11 @@
 import pandas as pd
 import pymysql
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 import streamlit as st
 from secretsfile import secrets
 import pricing
 import visuals
+import sklearn
 
 ## connecting to database
 endpoint = secrets.get('DATABASE_ENDPOINT')
@@ -47,7 +48,7 @@ states_list.insert(0, '---')
 def load_pricing(area):
     area_quotes = "'" + area + "'"
     query = f'SELECT amenity, score FROM {database}.pricing_features WHERE scrape_city={area_quotes};'
-    pricing = pd.read_sql_query(query, engine)
+    pricing = pd.read_sql_query(sql=text(query), con=engine.connect())
 
     remove_list = ['bathrooms_text', 'accommodates', 'bedrooms', 'beds', 'room_type', 'number_of_reviews',
                    'minimum_nights', 'host_acceptance_rate', 'host_response_rate', 'host_response_time']
