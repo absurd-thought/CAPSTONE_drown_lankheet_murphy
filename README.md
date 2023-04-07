@@ -1,4 +1,4 @@
-# And That Means Comfort: Optimizing Airbnb Listings (A Tool for Hosts)
+# And That Means Comfort: Optimizing Airbnb Listings (a tool for hosts)
 #### by Gretchyn Drown, Paul Lankheet, and Patrick Murphy
 
 ## About
