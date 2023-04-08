@@ -1,11 +1,13 @@
 altair==4.2.0
 matplotlib==3.6.2
+mysql-connector-python==8.0.30
 nltk==3.8.1
 numpy==1.23.5
 pandas==1.4.4
 pickle==3.11.3
 plotly==5.13.0
 PyMySQL==1.0.2
+regex==2022.9.13
 scikit_learn==1.2.2
 SQLAlchemy==1.4.46
 streamlit==1.20.0
