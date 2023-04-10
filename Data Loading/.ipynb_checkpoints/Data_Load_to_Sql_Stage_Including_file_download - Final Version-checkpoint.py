@@ -15,7 +15,7 @@ import sqlite3
 import sys
 parentDirectory = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
 sys.path.insert(0,parentDirectory)
-from secretsfile import secrets
+from secrets import secrets
 import mysql.connector
 
 import re

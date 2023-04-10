@@ -34,27 +34,7 @@ secrets['DATABASE_NAME'] = 'my_db_name'
 Now you can run the .py files.
 
 ## Loading up your database
-First you will need to download the filenames.
-
-Second - you will need to run this file.
-Data Loading/Data_Load_to_Sql_Stage_Including_file_download - Final Version.py
-
-Note you will need to create tables in your database to accept the files.  It can be done by using the commented out to_sql line in function or manually. All Create statements have been added to the file SQl Tables
-
-    #used to first create the database table
-    #listing_detail.to_sql('listing_detail_stage',con=connection, if_exists='replace',index=False, chunksize=1000, method='multi')
-
-2nd note - this will create a large amount of files in your data loading folder (as it downloads each csv)
-
-## Data transformations
-A number of data transformations/cleaning/views were created to support the analysis.  These can be found in the file
-Data Transformation\SQl for Table and Views.sql
-
-Next the file database loading amenities & reviews here
-functions/Database Loading Amenities & Reviews.ipynb
-
-will run the reviews and amenities scripts and save the data to the database.
-
+* Run the (DATABASE PY FILE NAME HERE) file.
 
 ## Creating and hosting your streamlit.io app
 * Download the folder "app" from the repository.
