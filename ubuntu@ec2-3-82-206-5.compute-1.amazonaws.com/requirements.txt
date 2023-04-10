@@ -1,9 +1,0 @@
-streamlit
-pandas
-altair
-wordclod
-matplotlib
-pickle
-numpy
-pymysql
-sqlalchemy
