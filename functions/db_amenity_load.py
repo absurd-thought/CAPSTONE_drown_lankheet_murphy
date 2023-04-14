@@ -53,6 +53,16 @@ def load_city_amenities(city):
 
     scores = -np.log10(skb_selector.pvalues_[skb_selector.pvalues_ != 0])
     scores /= scores.max()
+    
+    #generate graph of SKB scores for report
+    X_indices = np.arange(100)
+    plt.figure(1)
+    plt.clf()
+    plt.bar(X_indices - 0.05, sorted(skb_selector.scores_, reverse = True)[:100])
+    plt.title("Feature univariate score")
+    plt.xlabel("Feature number")
+    plt.ylabel(r"Univariate score ($-Log(p_{value})$)")
+    plt.show()
 
     #trim to top 20 for ease of user interaction
     amenities = []
