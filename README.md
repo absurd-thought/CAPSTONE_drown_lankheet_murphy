@@ -2,7 +2,7 @@
 #### by Gretchyn Drown, Paul Lankheet, and Patrick Murphy
 
 ## About
-This Capstone project for the University of Michigan’s Master of Applied Data Science program aims to help Airbnb hosts maximize their booking opportunities by optimizing home attributes, descriptive terms, and pricing for their property. You can see this project in action [here](https://drive.google.com/file/d/1gWuza5l8nYSvGN-PuInj8UbI-9S4kqof/view?usp=share_link). Check our our [blog post](https://medium.com/@gdrown/and-that-means-comfort-optimizing-airbnb-listings-fbc0ce1e052d) for methodology information.
+This Capstone project for the University of Michigan’s Master of Applied Data Science program aims to help Airbnb hosts maximize their booking opportunities by optimizing home attributes, descriptive terms, and pricing for their property. You can see this project in action [here](https://drive.google.com/file/d/1gWuza5l8nYSvGN-PuInj8UbI-9S4kqof/view?usp=share_link). Check out our [blog post](https://medium.com/@gdrown/and-that-means-comfort-optimizing-airbnb-listings-fbc0ce1e052d) for methodology information.
 
 _Data access statement:_ Data is public domain and may be obtained from [Inside Airbnb](http://insideairbnb.com/get-the-data/). It is used under a [Creative Commons](https://creativecommons.org/licenses/by/4.0/) license.
 
